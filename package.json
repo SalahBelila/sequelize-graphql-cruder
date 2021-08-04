@@ -1,0 +1,23 @@
+{
+  "name": "sequelize-graphql-cruder",
+  "version": "1.0.0",
+  "description": "Generate GraphQL Schema and CRUD operations from Sequelize models",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salahbelila/sequelize-graphql-cruder.git"
+  },
+  "keywords": [
+    "GraphQL",
+    "Sequelize"
+  ],
+  "author": "Salah Belila",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/salahbelila/sequelize-graphql-cruder/issues"
+  },
+  "homepage": "https://github.com/salahbelila/sequelize-graphql-cruder#readme"
+}
