@@ -1,4 +1,3 @@
-//cs comment means Custom Scalar.
 const TYPE_MAP = {
     STRING: {type: 'String', isCustom: false},
     CHAR: {type: 'String', isCustom: false},
@@ -20,7 +19,7 @@ const TYPE_MAP = {
     DOUBLE: {type: 'Numeric', isCustom: true},
 }
 module.exports = {
-  typeMapper: (type) => TYPE_MAP[type] || 'String'
+  typeMapper: (type) => TYPE_MAP[type] || {type: 'String', isCustom: false}
 };
 //             'POSTGRES :    MySQL   :   SQLite   :   MSSQL'
 // `

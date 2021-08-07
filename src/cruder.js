@@ -44,7 +44,6 @@ const getAssociations = (model) => {
         } else if (associationType === 'BelongsTo') {
             const identifier = association.identifier;
             foreignKeys[identifier] = { references, fieldName: associationKey };
-            console.log(foreignKeys[identifier], association.as);
         }
     }
     return { hasMany, foreignKeys };
