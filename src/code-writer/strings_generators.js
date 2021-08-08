@@ -28,8 +28,10 @@ const associationsFieldsDefsList = ({ hasMany }) => {
 }
 
 const operationString = (abstract, name, operType, strict) => {
+    let argsList = '';
     const operName = camelCase(name, CRUD[operType]);
-    const argsList = fieldsDefsList(abstract, strict, 'input');
+    if (operType === 'u') argsList = [`searchInput: ${name}Input`, `updateInput: ${name}Input`];
+    else argsList = fieldsDefsList(abstract, strict, 'input')
     const returnType = operType === 'r' ? `[${name}!]` : (operType === 'd' ? 'Int' : name);
     return `${operName}${block(argsList, '(', ')', ', ', true)}: ${returnType}`;
 }
