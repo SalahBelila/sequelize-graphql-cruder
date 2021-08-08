@@ -1,41 +1,49 @@
+const { camelCase, block, CRUD } = require('./strings_generators');
+
+const resolversFunctions = {
+    c: (typeName) => [
+        `const transaction = await sequelize.transaction();`,
+        `try ${block([
+        `const result = await models.${typeName}.create({where: args, transaction});`,
+        `await transaction.commit();`,
+        `return result;`
+    ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`],
+    r: (typeName) => [
+        `const transaction = await sequelize.transaction();`,
+        `try ${block([
+        `const result = await models.${typeName}.findAll({where: args, transaction});`,
+        `await transaction.commit();`,
+        `return result;`
+    ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`],
+    u: (typeName) => [
+        `const transaction = await sequelize.transaction();`,
+        `try ${block([
+        `const result = await models.${typeName}.update`, block([
+            'where: args.searchInput', 'values: args.updateInput', 'transaction'
+        ], '({', '});', ',\n', false, 4),
+        `await transaction.commit();`,
+        `return result;`
+    ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`],
+    d: (typeName) => [
+        `const transaction = await sequelize.transaction();`,
+        `try ${block([
+        `const result = await models.${typeName}.destroy({where: args.searchInput, transaction});`,
+        `await transaction.commit();`,
+        `return result;`
+    ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`]
+};
+
 const generateResolvers = (types) => {
     let resolvers = {};
     for (const typeKey in types) {
-        const c = addFunctionDeclaration(generateCResolver(typeKey), typeKey, 'c');
-        const r = addFunctionDeclaration(generateRResolver(typeKey), typeKey, 'r');
-        const u = addFunctionDeclaration(generateUResolver(typeKey), typeKey, 'u');
-        const d = addFunctionDeclaration(generateDResolver(typeKey), typeKey, 'd');
-        resolvers[typeKey] = [c, r, u, d];
+        resolvers[typeKey] = ['c', 'r', 'u', 'd'].map( operType => {
+            const operName = camelCase(typeKey, CRUD[operType]);
+            let resolver = `${operName}: async (args, { models, sequelize }) => `;
+            resolver += `${block(resolversFunctions[operType](typeKey), '{', '}', '\n', false, 2)}`;
+            return resolver;
+        });
     }
     return resolvers;
-}
-
-const CRUD = { c: 'Add', r: 'Get', u: 'Update', d: 'Delete' }
-
-const addFunctionDeclaration = (functionBody, typeName, operationType) => {
-    typeName = typeName.charAt(0).toLowerCase() + typeName.slice(1);
-    return `${typeName}${CRUD[operationType]}: async (args, { models }) => {\n${functionBody}\n}`
-}
-
-const generateCResolver = (typeName) => {
-    return `return await models.${typeName}.create(args);`;
-}
-
-const generateRResolver = (typeName) => {
-    return `return await models.${typeName}.findAll(args.searchInput);`;
-}
-
-const generateUResolver = (typeName) => {
-    let resolver = ``;
-    resolver += `return await models.${typeName}.update({\n`;
-    resolver += `where: args.searchInput,\n`
-    resolver += `values: args.updateInput`
-    resolver += '\n});';
-    return resolver;
-}
-
-const generateDResolver = (typeName) => {
-    return `return await models.${typeName}.destroy({where: args.searchInput});`
 }
 
 module.exports = generateResolvers;

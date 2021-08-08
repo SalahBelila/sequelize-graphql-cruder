@@ -1,14 +1,15 @@
 const fs = require('fs');
 const path = require('path');
+const { block } = require('./strings_generators');
 
 const writeCode = (schema, resolvers, customScalars, outputPath) => {
     let filesStrings = {};
     for (const modelKey in schema) {
-        filesStrings[modelKey] =[
-            `const schema = {\n${generateSchemaObjectString(schema[modelKey]).join(',\n')}\n}`,
-            `const resolvers = {\n${resolvers[modelKey].join(',\n')}\n};`,
-            'module.exports = {schema, resolvers};'
-        ].join('\n');
+        filesStrings[modelKey] = block([
+            `const schema = ${block(generateSchemaObjectString(schema[modelKey]), '{', '}', ',\n\n', false, 1)}`,
+            `const resolvers = ${block(resolvers[modelKey], '{', '}', ',\n\n', false, 1)}`,
+            'module.exports = { schema, resolvers };'
+        ], '', '', '\n', true);
     }
     if (customScalars.length > 0) {
         filesStrings['custom_scalars'] = `module.exports = \`\n${customScalars.map(scalar => `scalar ${scalar.name}`)}\n\``;
@@ -21,51 +22,38 @@ const writeCode = (schema, resolvers, customScalars, outputPath) => {
 }
 
 const generateSchemaObjectString = (obj) => {
-    list = [];
-    for (key in obj) {
-        list.push(`${key}: \`\n${obj[key]}\n\``);
-    }
+    const list = Object.keys(obj).map(key => `${key}: ${block(obj[key], '\`', '\`', '\n', false, 2)}`);
     return list;
 }
 
 const generateIndexFileString = () => {
-    return `const fs = require("fs");
-const customScalars = require('./custom_scalars');
-const normalizedPath = __dirname;
-const rawTypeDefs = []
-fs.readdirSync(normalizedPath).forEach((file) => (file === 'custom_scalars.js') || rawTypeDefs.push(require(\`./\${file}\`)));
+    return `const fs = require('fs');
+const path = require('path');
 
-let allResolvers = {}
-// This will hold resolvers from all files.
-
-let merged = {};
-// merged variable will look like {
-//     Query: 'Combined Queries text from all files',
-//     Mutation: 'Combined Mutations text from all files',
-//     ...
-// }
+let allResolvers = {};
+const merged = {};
 let typeDefs = '';
-// typeDefs will contain custom types only, since everything else is in merged variable.
-
-rawTypeDefs.forEach(rawType => {
-    const {schema, resolvers} = rawType;
+fs.readdirSync(__dirname).forEach(fileName => {
+    if (fileName === 'custom_scalars.js' || fileName === 'index.js') return;
+    const { schema, resolvers } = require('./' + fileName);
     if (!schema || !resolvers) {
-        console.warn("One file skipped, Does not hava a schema.");
+        console.warn('File skipped ' + fileName + '. Missing Schema or Resolvers.');
         return;
     }
     allResolvers = { ...allResolvers, ...resolvers };
     for (const operation in schema){
         preparedString = schema[operation];
-        if (operation == 'typeDefs') {
-            typeDefs += preparedString;
-            continue;
-        }
-        merged[operation] ? merged[operation] += preparedString.trim() : merged[operation] = preparedString.trim() + '\\n';
+        if (operation == 'typeDefs') typeDefs += preparedString + '\\n';
+        else if (merged[operation]) merged[operation] += preparedString.trim() + '\\n';
+        else merged[operation] = preparedString.trim() + '\\n';
     }
 });
 // Add custom scalars
-typeDefs += '\\n' + customScalars + '\\n'
-
+if (fs.existsSync(path.resolve(__dirname, './custom_scalars.js'))) {
+    const customScalars = require('./custom_scalars');
+    typeDefs += '\\n' + customScalars + '\\n';
+}
+// generate the schema string from the merged object.
 let schema = '';
 for (k in merged) {
     schema += '\\n\\t' + 'type ' + k + '{\\n\\t' + merged[k] + '}\\n';
@@ -74,5 +62,4 @@ schema = '\\n' + typeDefs + '\\n' + schema;
 module.exports = { schema, resolvers: allResolvers };
 `
 }
-
 module.exports = writeCode;
