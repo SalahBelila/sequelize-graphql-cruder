@@ -1,4 +1,4 @@
-const { typeString, operationString, camelCase } = require('./strings_generators');
+const { typeString, operationString } = require('./strings_generators');
 
 const generateSchema = (types) => {
     schema = {};
