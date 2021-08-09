@@ -12,7 +12,9 @@
   },
   "keywords": [
     "GraphQL",
-    "Sequelize"
+    "Sequelize",
+    "CRUD",
+    "generator"
   ],
   "author": "Salah Belila",
   "license": "MIT",
