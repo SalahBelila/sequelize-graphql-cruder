@@ -19,5 +19,6 @@
   "bugs": {
     "url": "https://github.com/salahbelila/sequelize-graphql-cruder/issues"
   },
-  "homepage": "https://github.com/salahbelila/sequelize-graphql-cruder#readme"
+  "homepage": "https://github.com/salahbelila/sequelize-graphql-cruder#readme",
+  "dependencies": {}
 }

@@ -8,7 +8,7 @@ const codeGen = (sequelizeModels, outputDir) => {
 };
 
 const plugCustomScalars = (executableSchema, customScalars) => {
-    customScalars.forEach(cs => Object.assign(executableSchema._typeMap[cs] = customScalarsDefs[`${cs}Scalar`]));
+    customScalars.forEach(cs => Object.assign(executableSchema._typeMap[cs] = customScalarsDefs[`${cs}Scalar`]()));
 }
 
 module.exports = {
