@@ -12,7 +12,7 @@ const writeCode = (schema, resolvers, customScalars, outputPath) => {
         ], '', '', '\n', true);
     }
     if (customScalars.length > 0) {
-        filesStrings['custom_scalars'] = `module.exports = \`\n${customScalars.map(scalar => `scalar ${scalar.name}`)}\n\``;
+        filesStrings['custom_scalars'] = `module.exports = ${block(customScalars, '[', ']', '\n', false, 1)}`;
     }
     for (const modelKey in filesStrings) {
         fs.writeFileSync(path.resolve(outputPath, `${modelKey}.js`), filesStrings[modelKey], (err) => console.log(err));
@@ -29,6 +29,7 @@ const generateSchemaObjectString = (obj) => {
 const generateIndexFileString = () => {
     return `const fs = require('fs');
 const path = require('path');
+let customScalars = [];
 
 let allResolvers = {};
 const merged = {};
@@ -50,8 +51,9 @@ fs.readdirSync(__dirname).forEach(fileName => {
 });
 // Add custom scalars
 if (fs.existsSync(path.resolve(__dirname, './custom_scalars.js'))) {
-    const customScalars = require('./custom_scalars');
-    typeDefs += '\\n' + customScalars + '\\n';
+    customScalars = require('./custom_scalars');
+    const customScalarsText = customScalars.map(cs => 'scalar ' + cs).join('\\n');
+    typeDefs += '\\n' + customScalarsText + '\\n';
 }
 // generate the schema string from the merged object.
 let schema = '';
@@ -59,7 +61,7 @@ for (k in merged) {
     schema += '\\n\\t' + 'type ' + k + '{\\n\\t' + merged[k] + '}\\n';
 }
 schema = '\\n' + typeDefs + '\\n' + schema;
-module.exports = { schema, resolvers: allResolvers };
+module.exports = { schema, resolvers: allResolvers, customScalars };
 `
 }
 module.exports = writeCode;

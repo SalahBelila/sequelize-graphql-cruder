@@ -12,8 +12,7 @@ const cruder = (models) => {
     }
     const schema = generateSchemaString(types);
     const resolvers = generateResolversString(types);
-    customScalars = getCustomScalars(customScalars);
-    return {schema, resolvers, customScalars};
+    return {schema, resolvers, customScalars: [...new Set(customScalars)]};
 };
 
 const retrieveAttributes = (model) => {
@@ -24,7 +23,7 @@ const retrieveAttributes = (model) => {
         const attr = modelattributes[attrKey];
         const type = typeMapper(attr.type.key);
         const required = !attr.allowNull;
-        if (type.isCustom) requiredCustomScalars.push(type.type);
+        if (type.isCustom) requiredCustomScalars.push(`'${type.type}'`);
         attributes[attrKey] = {type: type.type, required };
     }
     const {hasMany, foreignKeys} = getAssociations(model);
