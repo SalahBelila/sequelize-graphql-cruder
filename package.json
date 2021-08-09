@@ -2,7 +2,7 @@
   "name": "sequelize-graphql-cruder",
   "version": "1.0.0",
   "description": "Generate GraphQL Schema and CRUD operations from Sequelize models",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
