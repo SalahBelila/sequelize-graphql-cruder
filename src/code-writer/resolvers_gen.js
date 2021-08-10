@@ -4,14 +4,14 @@ const resolversFunctions = {
     c: (typeName) => [
         `const transaction = await sequelize.transaction();`,
         `try ${block([
-        `const result = await models.${typeName}.create({where: args, transaction});`,
+        `const result = await models.${typeName}.create(args, {transaction});`,
         `await transaction.commit();`,
         `return result;`
     ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`],
     r: (typeName) => [
         `const transaction = await sequelize.transaction();`,
         `try ${block([
-        `const result = await models.${typeName}.findAll({where: args, transaction});`,
+        `const result = await models.${typeName}.findAll({ where: args, transaction });`,
         `await transaction.commit();`,
         `return result;`
     ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`],
@@ -19,15 +19,15 @@ const resolversFunctions = {
         `const transaction = await sequelize.transaction();`,
         `try ${block([
         `const result = await models.${typeName}.update`, block([
-            'where: args.searchInput', 'values: args.updateInput', 'transaction'
-        ], '({', '});', ',\n', false, 4),
+            'args.updateInput', '{ where: args.searchInput, transaction }'
+        ], '(', ');', ',\n', false, 4),
         `await transaction.commit();`,
-        `return result;`
+        `return result[0];`
     ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`],
     d: (typeName) => [
         `const transaction = await sequelize.transaction();`,
         `try ${block([
-        `const result = await models.${typeName}.destroy({where: args.searchInput, transaction});`,
+        `const result = await models.${typeName}.destroy({where: args, transaction});`,
         `await transaction.commit();`,
         `return result;`
     ], '{', '}', '\n', false, 3)} catch { await transaction.rollback(); }`]

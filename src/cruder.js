@@ -34,22 +34,18 @@ const retrieveAttributes = (model) => {
 const getAssociations = (model) => {
     let foreignKeys = {};
     let hasMany = {};
-    for (associationKey in model.associations) {
+    for (let associationKey in model.associations) {
         const association = model.associations[associationKey];
-        const references = association.target.options.name.singular;
+        const references = association.target;
         const associationType = association.associationType;
         if (associationType === 'HasMany') {
-            hasMany[associationKey] = { references };
+            hasMany[associationKey] = { references: references.name };
         } else if (associationType === 'BelongsTo') {
             const identifier = association.identifier;
-            foreignKeys[identifier] = { references, fieldName: associationKey };
+            foreignKeys[identifier] = { references: references.name, fieldName: associationKey };
         }
     }
     return { hasMany, foreignKeys };
-}
-
-const getCustomScalars = (customScalars) => {
-    return customScalars.map(cs => ({name: cs, value: require(`./custom-scalars/${cs}`)}));
 }
 
 module.exports = cruder;

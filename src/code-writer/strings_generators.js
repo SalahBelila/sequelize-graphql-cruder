@@ -32,7 +32,8 @@ const operationString = (abstract, name, operType, strict) => {
     const operName = camelCase(name, CRUD[operType]);
     if (operType === 'u') argsList = [`searchInput: ${name}Input`, `updateInput: ${name}Input`];
     else argsList = fieldsDefsList(abstract, strict, 'input');
-    const returnType = operType === 'r' ? `[${name}!]` : (operType === 'd' ? 'Int' : name);
+    const CRUD_RETURN_TYPES = {c: name, r: `[${name}!]`, u: 'Int', d: 'Int'};
+    const returnType = CRUD_RETURN_TYPES[operType];
     return `${operName}${block(argsList, '(', ')', ', ', true)}: ${returnType}`;
 }
 
