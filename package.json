@@ -1,6 +1,6 @@
 {
   "name": "sequelize-graphql-cruder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate GraphQL Schema and CRUD operations from Sequelize models",
   "main": "src/index.js",
   "scripts": {
