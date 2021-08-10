@@ -12,7 +12,7 @@ const writeCode = (schema, resolvers, customScalars, outputPath) => {
         ], '', '', '\n', true);
     }
     if (customScalars.length > 0) {
-        filesStrings['custom_scalars'] = `module.exports = ${block(customScalars, '[', ']', '\n', false, 1)}`;
+        filesStrings['custom_scalars'] = `module.exports = ${block(customScalars, '[', ']', '\n,', false, 1)}`;
     }
     for (const modelKey in filesStrings) {
         fs.writeFileSync(path.resolve(outputPath, `${modelKey}.js`), filesStrings[modelKey], (err) => console.log(err));
