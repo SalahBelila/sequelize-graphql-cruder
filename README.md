@@ -7,9 +7,13 @@ Automatically generate GraphQL schema and CRUD operations from Sequelize models
 
 # Install
 Install using NPM.  
-`npm i sequelize-graphql-cruder`  
+```sh
+npm i sequelize-graphql-cruder
+```  
 Or clone the repository  
-`git clone https://github.com/SalahBelila/sequelize-graphql-cruder.git`
+```
+git clone https://github.com/SalahBelila/sequelize-graphql-cruder.git
+```
 
 # Features
 - [x] **Simple and easy to use**  
@@ -34,7 +38,7 @@ After the schema is generated you can import it into your project in the followi
 const {schema, resolvers, customScalars} = require('./schema');
 ```
 
-### A Simple Server e.g.
+### A Simple Server Example
 ```javascript
 const { plugCustomScalars } = require('sequelize-graphql-cruder');
 const { Sequelize } = require('sequelize');
@@ -47,7 +51,7 @@ const { schema, resolvers, customScalars } = require('./schema');
 
 // Build the schema.
 const executableSchema = buildSchema(schema);
-// Add the generated custom scalars to graphql type mapper.
+// Add the generated custom scalars to schema type mapper.
 plugCustomScalars(executableSchema, customScalars);
 
 const sequelize = new Sequelize(sequelizeConfig);
@@ -175,7 +179,7 @@ const resolvers = {
 **Notice that the context parameter must contain the models and the sequelize instance**
 
 # Custom Scalars
-Requiring the generated schema yields an object with three properties `schema`, `resolvers`, `customScalars`. We discussed above the `schema` and `resolvers` and now it is time to talk about `customScalars`.  
+Requiring the generated schema yields an object with three properties `schema`, `resolvers` and `customScalars`. We discussed above the `schema` and `resolvers` and now it is time to talk about `customScalars`.  
 `customScalars` is just a list containing the names of all custom scalars used in the schema. This list can be passed to the `plugCustomScalars` function which is responsible for adding the custom scalars to the built schema type map.
 ```javascript
 const { plugCustomScalars } = require('sequelize-graphql-cruder');
@@ -183,7 +187,7 @@ const { schema, resolvers, customScalars } = require('./schema');
 
 // Build the schema.
 const executableSchema = buildSchema(schema);
-// Add the generated custom scalars to graphql type mapper.
+// Add the generated custom scalars to schema type mapper.
 plugCustomScalars(executableSchema, customScalars);
 ```
 Alternatively you can add the mapping manually using your own Custom Scalar objects.  
@@ -199,7 +203,7 @@ The table below shows all provided custom scalars and the corresponding Seqeuliz
 |BigInt         | `BIGINT`|  
 **Note:** if a mapping could not be found for a Sequelize data type, the string scalar will be used.  
 
-# Sequelize Association
+# Sequelize Associations
 Sequelize implements the three types of associations (one-to-one, one-to-many, many-to-many) through four methods of the `Model` class: `belongsTo`, `hasOne`, `hasMany` and `belongsToMany`. `Sequelize GraphQL Cruder` takes these associations into consideration when generating the schema. The table below describes how `Sequelize GraphQL Cruder` behaves when it finds any of the aforementionned associations defined on a model:  
 |Association| Cruder Behaviour |
 |:---------:|:----------------:|
